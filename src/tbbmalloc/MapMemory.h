@@ -173,7 +173,9 @@ int UnmapMemory(void *area, size_t bytes)
 #elif (_WIN32 || _WIN64) && !__TBB_WIN8UI_SUPPORT
 #include <windows.h>
 
-bool TryEnableLargePageSupport()
+#pragma comment(lib, "Advapi32.lib")
+
+extern bool TryEnableLargePageSupport()
 {
     // Large pages require memory locking privilege
     TOKEN_PRIVILEGES priv;
@@ -209,7 +211,7 @@ bool TryEnableLargePageSupport()
 #define MEMORY_MAPPING_USES_MALLOC 0
 void* MapMemory (size_t bytes, PageType)
 {
-    static const bool useLagePages = TryEnableLargePageSupport();
+    static const bool useLargePages = TryEnableLargePageSupport();
 
     /* Is VirtualAlloc thread safe? */
     DWORD allocationType = useLargePages ? MEM_LARGE_PAGES | MEM_RESERVE | MEM_COMMIT : MEM_RESERVE | MEM_COMMIT;
