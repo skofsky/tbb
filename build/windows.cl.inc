@@ -24,9 +24,9 @@
 #------------------------------------------------------------------------------
 # Setting compiler flags.
 #------------------------------------------------------------------------------
-CPLUS ?= cl /nologo
+CPLUS ?= cl /nologo /GL
 LINK_FLAGS = /link /nologo
-LIB_LINK_FLAGS=/link /nologo /DLL /MAP /DEBUG /fixed:no /INCREMENTAL:NO /DYNAMICBASE /NXCOMPAT
+LIB_LINK_FLAGS=/link /nologo /DLL /MAP /DEBUG /fixed:no /INCREMENTAL:NO /DYNAMICBASE /NXCOMPAT /LTCG
 
 ifneq (,$(stdver))
     CXX_STD_FLAGS = /std:$(stdver)

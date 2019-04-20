@@ -71,7 +71,7 @@ struct BackRefMaster {
 /* space is reserved for master table and 4 leaves
    taking into account VirtualAlloc allocation granularity */
     static const int leaves = 4;
-    static const size_t masterSize = BackRefMaster::bytes+leaves*BackRefBlock::bytes;
+    static const size_t masterSize = max(BackRefMaster::bytes+leaves*BackRefBlock::bytes, 2 * 1024 * 1024);
     // The size of memory request for a few more leaf blocks;
     // selected to match VirtualAlloc granularity
     static const size_t blockSpaceSize = 64*1024;

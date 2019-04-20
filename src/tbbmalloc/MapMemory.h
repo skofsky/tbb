@@ -175,37 +175,31 @@ int UnmapMemory(void *area, size_t bytes)
 
 #pragma comment(lib, "Advapi32.lib")
 
-extern bool TryEnableLargePageSupport()
+bool TryEnableLargePageSupport()
 {
     // Large pages require memory locking privilege
     TOKEN_PRIVILEGES priv;
     priv.PrivilegeCount = 1;
+    priv.Privileges[0].Attributes = SE_PRIVILEGE_ENABLED;
+
+    bool result = false;
 
     DWORD error;
-    if (!LookupPrivilegeValue(nullptr, SE_LOCK_MEMORY_NAME, &priv.Privileges[0].Luid))
+    if (LookupPrivilegeValue(nullptr, SE_LOCK_MEMORY_NAME, &priv.Privileges[0].Luid) == TRUE)
     {
-        return false;
-    }
-    else
-    {
-        priv.Privileges[0].Attributes = SE_PRIVILEGE_ENABLED;
         HANDLE hToken;
-        if (!OpenProcessToken(GetCurrentProcess(), TOKEN_QUERY | TOKEN_ADJUST_PRIVILEGES, &hToken))
+        if (OpenProcessToken(GetCurrentProcess(), TOKEN_QUERY | TOKEN_ADJUST_PRIVILEGES, &hToken) == TRUE)
         {
-            return false;
-        }
-        else
-        {
-            if (AdjustTokenPrivileges(hToken, FALSE, &priv, 0, nullptr, nullptr) == TRUE && GetLastError() != 0)
+            if (AdjustTokenPrivileges(hToken, FALSE, &priv, 0, nullptr, nullptr) == TRUE && GetLastError() == ERROR_SUCCESS)
             {
-                return true;
+                result = true;
             }
 
             CloseHandle(hToken);
         }
     }
 
-    return false;
+    return result;
 }
 
 #define MEMORY_MAPPING_USES_MALLOC 0
